@@ -4,7 +4,7 @@ layout: default
 
 ---
 
-# Hi, I'm YOUR NAME HERE
+# Simon Schmid
 
 This is my site of projects for the [Lede Program](http://ledeprogram.com)
 

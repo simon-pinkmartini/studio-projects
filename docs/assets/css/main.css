@@ -17,26 +17,26 @@
 }
 
 h1 {
-  font-size: 54px;
+  font-size: 40px;
 }
 
 h2 {
-  font-size: 32px;
+  font-size: 28px;
 }
 
 p {
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.8;
 }
 
 li {
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.8;
 }
 
 a {
   text-decoration: none;
-  background: #bdffc5;
+  background: #5c9ddf;
   padding: 3px 6px;
   color: #000;
 }
