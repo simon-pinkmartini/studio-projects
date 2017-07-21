@@ -1,0 +1,74 @@
+/*
+some google fonts here (these are refereed to in the html doc)
+https://fonts.google.com/featured/2016+Fonts+Refresh?selection.family=Cabin|Inconsolata|Nunito|Nunito+Sans|Pacifico|Quicksand|Roboto|Rubik|VT323
+font-family: 'Roboto', sans-serif;
+font-family: 'Rubik', sans-serif;
+font-family: 'Pacifico', cursive;
+font-family: 'Quicksand', sans-serif;
+font-family: 'Inconsolata', monospace;
+font-family: 'Cabin', sans-serif;
+font-family: 'VT323', monospace;
+font-family: 'Nunito', sans-serif;
+font-family: 'Nunito Sans', sans-serif;
+ */
+
+
+.sample {
+     color: red; /* simple color name or hex value: #123456 */
+     font-family: 'Pacifico', cursive; /* see above */
+     font-size:32px;
+     line-height:42px;
+     text-align: center; /* left, right, center, justify */
+ }
+
+body {
+  font-family: 'Droid Serif', serif;
+  font-size: 18px;
+  text-align: center;
+}
+
+.price {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+ h1 {
+   font-family: 'Press Start 2P', cursive;
+   font-size: 70px;
+   line-height: 100px;
+ }
+
+ .subtitle {
+   font-size: 20px;
+ }
+
+h2 {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 40px;
+  line-height: 80px;
+  margin-top: 60px;
+  margin-bottom: 0px;
+}
+
+h3 {
+  font-size: 28px;
+  font-weight: bold;
+  /*line-height: 32px;*/
+  margin-top: 40px;
+  margin-bottom: 0px;
+}
+
+em {
+  font-family: 'Source Code Pro', monospace;
+  font-style: normal;
+}
+
+
+/* some possible styles to add
+.course
+.dish-name
+.dish-description
+.price
+.beverage
+
+*/
