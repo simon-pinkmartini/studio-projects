@@ -12,4 +12,6 @@ This is a data project for the Lede Program at Columbia Journalism School
 
 ## To see the result
 
-Go to: https://simon-pinkmartini.github.io/studio-projects/Einbuergerungen/swissmade.html
+Please download the zip-Archive at: https://github.com/simon-pinkmartini/studio-projects/blob/master/code/Einbuergerungen/web/Archive.zip
+
+Extract and load swissmade.html into your browser.
