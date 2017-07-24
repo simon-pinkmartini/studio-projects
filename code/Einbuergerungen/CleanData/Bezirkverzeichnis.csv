@@ -1,0 +1,149 @@
+Kanton,Bezirksnummer,Bezirksname
+ZH,101,Affoltern
+ZH,102,Andelfingen
+ZH,103,Bülach
+ZH,104,Dielsdorf
+ZH,105,Hinwil
+ZH,106,Horgen
+ZH,107,Meilen
+ZH,108,Pfäffikon
+ZH,109,Uster
+ZH,110,Winterthur
+ZH,111,Dietikon
+ZH,112,Zürich
+BE,243,Seeland
+BE,246,Bern-Mittelland
+BE,244,Oberaargau
+BE,242,Biel/Bienne
+BE,245,Emmental
+BE,241,Jura bernois
+BE,249,Frutigen-Niedersimmental
+BE,250,Interlaken-Oberhasli
+BE,247,Thun
+BE,248,Obersimmental-Saanen
+LU,316,Entlebuch
+LU,313,Hochdorf
+LU,312,Luzern-Land
+LU,311,Luzern-Stadt
+LU,314,Sursee
+LU,315,Willisau
+UR,400,Kt. Uri
+SZ,501,Einsiedeln
+SZ,502,Gersau
+SZ,503,Höfe
+SZ,504,Küssnacht (SZ)
+SZ,505,March
+SZ,506,Schwyz
+OW,600,Kt. Obwalden
+NW,700,Kt. Nidwalden
+GL,800,Kt. Glarus
+ZG,900,Kt. Zug
+FR,1001,La Broye
+FR,1002,La Glâne
+FR,1003,La Gruyère
+FR,1004,La Sarine
+FR,1005,See / Lac
+FR,1006,Sense
+FR,1007,La Veveyse
+SO,1101,Gäu
+SO,1102,Thal
+SO,1103,Bucheggberg
+SO,1104,Dorneck
+SO,1105,Gösgen
+SO,1106,Wasseramt
+SO,1107,Lebern
+SO,1108,Olten
+SO,1109,Solothurn
+SO,1110,Thierstein
+BS,1200,Kt. Basel-Stadt
+BL,1301,Arlesheim
+BL,1302,Laufen
+BL,1303,Liestal
+BL,1304,Sissach
+BL,1305,Waldenburg
+SH,1401,Oberklettgau
+SH,1402,Reiat
+SH,1403,Schaffhausen
+SH,1404,Schleitheim
+SH,1405,Stein
+SH,1406,Unterklettgau
+AR,1501,Hinterland
+AR,1502,Mittelland
+AR,1503,Vorderland
+AI,1600,Kt. Appenzell i.Rh.
+SG,1721,St. Gallen
+SG,1722,Rorschach
+SG,1723,Rheintal
+SG,1724,Werdenberg
+SG,1725,Sarganserland
+SG,1726,See-Gaster
+SG,1727,Toggenburg
+SG,1728,Wil
+GR,1821,Albula
+GR,1822,Bernina
+GR,1831,Surselva
+GR,1823,Hinterrhein
+GR,1824,Imboden
+GR,1825,Inn
+GR,1827,Maloja / Maloggia
+GR,1828,Moesa
+GR,1830,Prättigau-Davos
+GR,1829,Plessur
+GR,1826,Landquart
+AG,1901,Aarau
+AG,1902,Baden
+AG,1903,Bremgarten
+AG,1904,Brugg
+AG,1905,Kulm
+AG,1906,Laufenburg
+AG,1907,Lenzburg
+AG,1908,Muri
+AG,1909,Rheinfelden
+AG,1910,Zofingen
+AG,1911,Zurzach
+TG,2011,Arbon
+TG,2015,Weinfelden
+TG,2012,Frauenfeld
+TG,2014,Münchwilen
+TG,2013,Kreuzlingen
+TI,2101,Bellinzona
+TI,2102,Blenio
+TI,2103,Leventina
+TI,2104,Locarno
+TI,2105,Lugano
+TI,2106,Mendrisio
+TI,2107,Riviera
+TI,2108,Vallemaggia
+VD,2221,Aigle
+VD,2227,Morges
+VD,2228,Nyon
+VD,2222,Broye-Vully
+VD,2223,Gros-de-Vaud
+VD,2224,Jura-Nord vaudois
+VD,2226,Lavaux-Oron
+VD,2225,Lausanne
+VD,2229,Ouest lausannois
+VD,2230,Riviera-Pays-d'Enhaut
+VS,2301,Brig
+VS,2302,Conthey
+VS,2303,Entremont
+VS,2304,Goms
+VS,2305,Hérens
+VS,2306,Leuk
+VS,2307,Martigny
+VS,2308,Monthey
+VS,2309,Raron
+VS,2310,Saint-Maurice
+VS,2311,Sierre
+VS,2312,Sion
+VS,2313,Visp
+NE,2401,Boudry
+NE,2402,La Chaux-de-Fonds
+NE,2403,Le Locle
+NE,2404,Neuchâtel
+NE,2405,Val-de-Ruz
+NE,2406,Val-de-Travers
+GE,2500,Cant. de Genève
+JU,2601,Delémont
+JU,2602,Les Franches-Montagnes
+JU,2603,Porrentruy

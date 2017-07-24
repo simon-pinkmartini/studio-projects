@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Where Swiss are Made</title>
+		<meta name="description" content="A Data Visualization Project for the Lede Program at Columbia Journalism School" />
+		<meta name="keywords" content="Switzerland, Swiss, population, citizenship" />
+		<meta name="author" content="" />
+		<!-- Bootstrap -->
+		<script src="js/modernizr.custom.js"></script>
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/jquery.fancybox.css" rel="stylesheet">
+		<link href="css/flickity.css" rel="stylesheet" >
+		<link href="css/animate.css" rel="stylesheet">
+		<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+		<link href="css/styles.css" rel="stylesheet">
+		<link href="css/queries.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.js"></script>
+		<!-- Facebook and Twitter integration -->
+    <script src="json/einbTimechart.js"></script>
+    <script src="json/einbCapitaBarchart.js"></script>
+    <script src="json/einbCapitaHist.js"></script>
+    <script src="searchOptions.js"></script>
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+  <body>
+		<!--[if lt IE 7]>
+		<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+		<![endif]-->
+		<!-- open/close -->
+		<header>
+			<section class="hero" id="page1">
+				<div class="texture-overlay"></div>
+				<div class="container">
+					<div class="row nav-wrapper">
+						<div class="col-md-6 col-sm-6 col-xs-6 text-left">
+							<!--<a href="#"><img src="img/logo-white.png" alt="Boxify Logo"></a>-->
+						</div>
+						<div class="col-md-6 col-sm-6 col-xs-6 text-right navicon">
+							<!--<p>MENU</p><a id="trigger-overlay" class="nav_slide_button nav-toggle" href="#"><span></span></a>-->
+						</div>
+					</div>
+					<div class="row hero-content">
+						<div class="col-md-12">
+							<h1 class="animated fadeInDown">Where Swiss Are Made</h1>
+              <h2>A walk through 35 years of naturalization data.</h2>
+              <!--<span class="instructions">Start by typing your home town:</span>-->
+							<!--<a href="http://tympanus.net/codrops/?p=22554" class="use-btn animated fadeInUp">Use it for free</a>-->
+              <input type="search" list="communes" placeholder="Start by typing your home town:" class="inputbox" id="commune_search">
+
+                <datalist id="communes">
+                  <script>
+                    searchbox = document.getElementById('communes');
+                    /*for (i in einbTimechartData) {
+                      searchbox.innerHTML += '<option value="' + i + '">' + einbTimechartData[i].Gemeinde_Name + '</option>'
+                    }*/
+                    searchbox.innerHTML = searchOptions;
+                  </script>
+                </datalist>
+
+              <a href="#page2" class="learn-btn animated fadeInUp" onClick="addTimechartSeries()">Let's go! <i class="fa fa-arrow-down"></i></a>
+						</div>
+					</div>
+				</div>
+			</section>
+		</header>
+    <section class="hero2" id="page2">
+      <div class="texture-overlay"></div>
+      <div class="container">
+        <div class="row hero-content">
+          <div class="col-md-12">
+
+            <div class="timechartleader" id="timechartleader">Choose a commune to get started!</div>
+
+            <div class="timechart">
+              <canvas id="myChart" width="undefined" height="undefined"></canvas>
+            </div>
+            <div class="timechartnext" id="timechartnext">
+              What does that mean in comparison?&nbsp;&nbsp;
+              <a href="#page3" class="learn-btn animated fadeInUp" onClick="populateBarchart()">Find it out <i class="fa fa-arrow-down"></i></a>
+            </div>
+            <script>
+            var startyear = 1981;
+            var endyear = 2015;
+
+            function range(a,b)
+            {
+              return a > b ? [] : [a].concat(range(++a, b));
+            }
+
+            function addTimechartSeries() {
+              id = document.getElementById("commune_search").value;
+              commune = einbTimechartData[id];
+              dataset = {
+                  label: commune.Gemeinde_Name,
+                  data: commune.data,
+                  //backgroundColor: "white",
+                  borderColor: "white",
+                  borderWidth: 3,
+                  fill: false
+              };
+              myChart.data.datasets[0] = dataset;
+              myChart.update();
+
+              headerdiv = document.getElementById("timechartleader");
+              headerdiv.innerHTML = 'In <em>'  + commune.Gemeinde_Name + '</em>, a total of <em>' + commune.Total + '</em> persons became <em>Swiss</em> since 1981.<br>Here\'s how this played out over the years.';
+
+            }
+
+            var ctx = document.getElementById("myChart");
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: range(startyear, endyear),
+                    datasets: []
+                },
+                options: {
+                  title: {
+                     display: true,
+                     text: 'Number of naturalizations per year',
+                     position: 'bottom',
+                     fontColor: 'white',
+                     fontSize: 18
+                 },
+                 legend: {
+                      labels: {
+                          fontColor: 'white',
+                          fontSize: 18,
+                          usePointStyle: true
+                      },
+                      position: 'right',
+                      display: false
+                  },
+                  scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontColor: 'white',
+                                fontSize: 18,
+                                beginAtZero:true
+                            },
+                            gridLines: {
+                               display: false,
+                               drawBorder: false
+                           }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                fontColor:"white",
+                                fontSize: 18,
+                            },
+                            gridLines: {
+                               display: false,
+                               drawBorder: false
+                           }
+                        }],
+
+                    }
+                }
+            });
+
+          </script>
+
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="hero3" id="page3">
+      <div class="texture-overlay"></div>
+      <div class="container">
+        <div class="row hero-content">
+          <div class="col-md-12">
+            <div class="barchartleader" id="barchartleader">Choose a commune to get started!</div>
+            <div class="barchart">
+              <canvas id="myChart2" width="undefined" height="undefined"></canvas>
+            </div>
+            <div class="barchartnext" id="barchartnext">
+              Where are communes with low and high ratios?&nbsp;&nbsp;
+              <a href="#page4" class="learn-btn animated fadeInUp" onClick="">See it on a map <i class="fa fa-arrow-down"></i></a>
+            </div>
+            <script>
+
+              function populateBarchart() {
+
+                id = document.getElementById("commune_search").value;
+                communeCap = einbCapitaBarchartData[id];
+
+                /*labels = [];
+                data = [];
+
+                labels[0] = commune.Gemeinde_Name;
+                data[0] = commune.Total;
+
+                switzerland = einbCapitaBarchartData[0];
+                labels[1] =  switzerland.Gemeinde_Name;
+                data[1] = switzerland.Total;*/
+
+                labels = einbCapitaHistData.index;
+                data = einbCapitaHistData.Total;
+                bgColors = []
+                for (i = 0; i < labels.length; i++) {
+                  bgColors.push('rgba(255, 255, 255, 0.5)');
+                }
+                bgColors[Math.round(communeCap.Total)] = 'rgba(255, 0, 0, 0.5)';
+
+                dataset = {
+                  label: 'Number of communes',
+                  data: data,
+                  backgroundColor: bgColors,
+                  borderColor: 'rgba(255, 255, 255, 1)',
+                  borderWidth: 3
+                }
+
+                myChart2.data.labels = labels;
+                myChart2.data.datasets[0] = dataset;
+                myChart2.update();
+
+                if (communeCap.Total > 7.1) {highlow = 'many';} else {highlow = 'few';}
+
+                headerdiv = document.getElementById("barchartleader");
+                headerdiv.innerHTML = 'The <em>' + commune.Total + '</em> naturalized citizens represent <em>' + communeCap.Total + ' percent</em> of the local <em>population.</em><br>Compared to its size, <em>' + communeCap.Gemeinde_Name + '</em> has made relatively <em>' + highlow + '</em> new Swiss!';
+              }
+
+              var ctx2 = document.getElementById("myChart2");
+              var myChart2 = new Chart(ctx2, {
+                  type: 'bar',
+                  data: {
+                      labels: [],
+                      datasets: [{
+                          label: 'Number of communes',
+                          data: [],
+                          backgroundColor: [
+                            'white',
+                            'rgba(255, 255, 255, 0.5)'
+                          ],
+                          borderColor: 'rgba(255, 255, 255, 1)',
+                          borderWidth: 3
+                      }]
+                  },
+              options: {
+                  maintainAspectRatio: false,
+                  title: {
+                       display: true,
+                       text: 'Number of communes by population share of naturalized persons since 1981',
+                       position: 'bottom',
+                       fontColor: 'white',
+                       fontSize: 18
+                   },
+                   legend: {
+                        labels: {
+                            fontColor: 'white',
+                            fontSize: 18,
+                            usePointStyle: true
+                        },
+                        position: 'right',
+                        display: false
+                    },
+                   scales: {
+                         yAxes: [{
+                             display: true,
+                             ticks: {
+                                 fontColor: 'white',
+                                 fontSize: 18,
+                                 beginAtZero: true
+                             },
+                             gridLines: {
+                                display: false,
+                                drawBorder: false
+                            }
+                         }],
+                         xAxes: [{
+                             display: true,
+                             scaleLineColor: "white",
+                             ticks: {
+                                 min: 0,
+                                 fontColor:"white",
+                                 fontSize: 14,
+                             },
+                             gridLines: {
+                                display: false,
+                                drawBorder: false
+                            }
+                         }],
+
+                     }
+                }
+              });
+            </script>
+        </div>
+      </div>
+    </section>
+    <section class="showcase" id="page4">
+			<div class="showcase-wrap">
+				<div class="texture-overlay"></div>
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+              <div class="showcaseleader" id="showcaseleader">The <em>hot spots</em> of naturalization are concentrated in <em>three areas</em>.<br>Browse the different maps to see them.</div>
+							<div class="device wp3">
+								<div class="device-content">
+									<div class="showcase-slider">
+										<ul class="slides" id="showcaseSlider">
+											<li>
+												<img src="img/map/map0.png" alt="Device Content Image">
+											</li>
+                      <li>
+												<img src="img/map/map1.png" alt="Device Content Image">
+											</li>
+											<li>
+												<img src="img/map/map3.png" alt="Device Content Image">
+											</li>
+											<li>
+												<img src="img/map/map5.png" alt="Device Content Image">
+											</li>
+                      <li>
+												<img src="img/map/map7.png" alt="Device Content Image">
+											</li>
+                      <li>
+												<img src="img/map/map10.png" alt="Device Content Image">
+											</li>
+                      <li>
+												<img src="img/map/map15.png" alt="Device Content Image">
+											</li>
+                      <li>
+												<img src="img/map/map20.png" alt="Device Content Image">
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+              <div class="showcasenext" id="showcasenext">
+                Like to look at a different commune?&nbsp;&nbsp;
+                <a href="#page1" class="learn-btn animated fadeInUp">Restart from the top <i class="fa fa-arrow-up"></i></a>
+              </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+<!--
+    <section class="hero4" id="page4">
+      <div class="texture-overlay"></div>
+      <div class="container">
+        <div class="row hero-content">
+          <div class="col-md-12">
+            <div class="mapleader" id="mapleader">Choose a commune to get started!</div>
+            <div class="map">
+              <img src="img/map/map0.png">
+            </div>
+            <div class="mapnext" id="mapnext">
+              Like to look at a different commune?&nbsp;&nbsp;
+              <a href="#page1" class="learn-btn animated fadeInUp">Restart from the top <i class="fa fa-arrow-up"></i></a>
+            </div>
+          </div>
+        </div>
+      </section>
+  </header>-->
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="js/min/toucheffects-min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="js/flickity.pkgd.min.js"></script>
+		<script src="js/jquery.fancybox.pack.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="js/retina.js"></script>
+		<script src="js/waypoints.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/min/scripts-min.js"></script>
+
+	</body>
+</html>
