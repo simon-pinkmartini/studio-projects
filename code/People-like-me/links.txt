@@ -1,0 +1,46 @@
+STÄNDIGE WOHNBEVÖLKERUNG 2015
+
+Alter:
+https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=de&px_db=px-x-0102010000_101&px_tableid=px-x-0102010000_101\px-x-0102010000_101.px&px_type=PX
+
+            1 2 3 4 5 ........ 25
+Gemeinde A                     2% der Bevölkerung
+Gemeinde B                     3% der Bevölkerung
+Schnitt                        2,5% der Bevölkerung
+
+===>  A                       20% unter dem Schnitt
+      B                       20% über dem Schnitt
+
+10 Klassen oder 100 Werte
+
+Nationalität:
+https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=de&px_db=px-x-0102010000_104&px_tableid=px-x-0102010000_104\px-x-0102010000_104.px&px_type=PX
+
+            Schweizer.....     Franzosen
+Gemeinde A                     4%
+Gemeinde B                     0%
+Schnitt                        2%
+
+===> A                        100% über dem Schmitt
+     B                        100% unter dem Schnitt
+
+                              Franzose, 25 Jahre alt
+Gemeinde A                    (100%-20%)/2= 40% über dem Schnitt
+Gemeinde B                    (-100%+20%)/2= 40% unter dem Schnitt
+
+Ca. 10 Klassen oder 250 Werte
+
+
+Haushaltsgrösse:
+https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=de&px_db=px-x-0102020000_401&px_tableid=px-x-0102020000_401\px-x-0102020000_401.px&px_type=PX
+
+6 Klassen
+
+Zivilstand:
+https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=de&px_db=px-x-0102010000_103&px_tableid=px-x-0102010000_103\px-x-0102010000_103.px&px_type=PX
+
+Parteistärken:
+https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=de&px_db=px-x-1702020000_105&px_tableid=px-x-1702020000_105\px-x-1702020000_105.px&px_type=PX
+
+Einkommen:
+https://www.estv.admin.ch/estv/de/home/allgemein/steuerstatistiken/fachinformationen/steuerstatistiken/direkte-bundessteuer/dbst-np-gemeinden-2013.html

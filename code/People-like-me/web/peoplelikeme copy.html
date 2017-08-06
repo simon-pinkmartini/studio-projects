@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+
+  <!-- Here we include the css-library for leaflet-->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+   integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+   crossorigin=""/>
+   <!-- Here we include the js-script for leaflet -->
+   <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+  integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+  crossorigin=""></script>
+  <!-- Here's our css-definition for the map container-->
+  <style>
+    #title { position: absolute; top: 20px; left: 20px; width: 900px; height: 100px; padding: 6px 8px; font: 30px Arial, Helvetica, sans-serif; font-weight: bold; background: white; }
+    #title span { font: 18px Arial, Helvetica, sans-serif; font-weight: normal; }
+
+    #map { position: absolute; top: 100px; left: 20px; width: 900px; height: 600px; }
+    .instructions { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .instructions h4 { margin: 0 0 5px; color: red; }
+    .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+    .legend { text-align: left; line-height: 20px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }
+    .selectbox { text-align: left; line-height: 18px; color: #555; } .selectbox select { font: 14px/16px Arial, Helvetica, sans-serif; background-color: transparent; border-width: 0px; outline: none; padding: 2px; }
+
+    #article { position: absolute; top: 100px; left: 940px; width: 400px; height: 600px; font: 14px Arial, Helvetica, sans-serif; font-weight: normal; background: #eeeeee}
+    #article .title { font: 20px Arial, Helvetica, sans-serif; font-weight: bold; } #article input { padding: 4px 4px; font: 14px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 5px rgba(0,0,0,0.2); border-radius: 4px; }
+    #article .click { color: red; }
+  </style>
+</head>
+<body>
+  <!-- A div for the title -->
+  <div id="title">Where Are The People Like You?<br><span>Visualizing demographic over- and underrepresentation in Swiss districts.<select id="dropdownHaushaltsgroesse" onchange="updateStyle()"><option value="0" selected>Household size</option><option value="1">1</option><option value="2">2</option></select></span></div>
+  <!-- This is our div which will contain the map -->
+  <div id="map"></div>
+
+  <!-- Here we get the GeoJSON data which will late be placed on the map -->
+  <script src="geojson/geodata_bez.js"></script>
+
+  <!-- Here we get the sociodemographic data that will be used to calculate the entity colors -->
+  <script src="json/data_bez.js"></script>
+
+  <!-- This is the script which populates the div -->
+  <script type="text/javascript">
+
+    //MAIN MAP
+    //--------
+
+    //Create a grey, empty space for the map
+    var map = L.map('map', {zoomControl:false}).setView([46.88, 8.2], 8);
+    map.dragging.disable();
+    map.doubleClickZoom.disable();
+    /*
+    //Add layers to the map --> make sure we have a good token!
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=sk.eyJ1Ijoic2ltb24tcGlua21hcnRpbmkiLCJhIjoiY2o0OHRteHd5MGdqNTJxbnd5a2FycnFjMCJ9.D-OViIkNdbrEyL5O1_9Mgg',
+    {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 8,
+        minZoom: 8,
+        id: 'mapbox.light',
+    }).addTo(map);*/
+
+    //this function defines the color for different number of questions
+    function getColor(feature) {
+
+      id = feature.id;
+      d = data[id]['Haushaltsgroesse']['1'];
+
+      return d > 5 ? '#0868ac' :
+             d > 25 ? '#43a2ca' :
+             d > 1  ? '#7bccc4' :
+             d > -1  ? '#a8ddb5' :
+             d > -25  ? '#ccebc5' :
+                      '#f0f9e8';
+    }
+
+
+
+    function style(feature) {
+        return {
+            fillColor: getColor(feature),
+            //fillColor: '#43a2ca',
+            weight: 1,
+            opacity: 0.6,
+            color: 'black',
+            //dashArray: '3',
+            fillOpacity: 0.8
+        };
+    }
+
+    function updateStyle() {
+      geojson.setStyle({
+          fillColor: 'red',
+          //fillColor: '#43a2ca',
+          weight: 1,
+          opacity: 0.6,
+          color: 'black',
+          //dashArray: '3',
+          fillOpacity: 0.8
+      });
+      return true;
+    }
+/*
+    //The highlight function, an eventhandler
+    function highlightFeature(e) {
+        var layer = e.target;
+        layer.setStyle({
+            weight: 4,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+        info.update(layer.feature.properties);
+    }
+    //The un-highlight function, another eventhandler
+    function resetHighlight(e) {
+      geojson.resetStyle(e.target);
+      info.update();
+    }
+*/
+/*
+    // The listener function for the layers on the map
+    function onEachFeature(feature, layer) {
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: updateArticle
+        });
+    }*/
+
+    //Add the structure to the map
+    var geojson = L.geoJSON(geodata, {
+            style: style                       //the style-setting function
+            //onEachFeature: onEachFeature       //the eventhandler function
+    }).addTo(map);
+
+
+
+    //ADDITIONAL CONTROLS
+    //-------------------
+
+    /*//THE TITLE CONTROL
+    var title = L.control({position: 'topleft'});
+    //Fill the title container with text
+    title.onAdd = function (map) {
+      var div_title = L.DomUtil.create('div', 'title');
+      div_title.innerHTML += '«There are no Stupid Questions»<br><span>An Inquiry into the Mystery of Swiss Parliamentary Question Hours</span>';
+      return div_title;
+    }
+    //Add the title control to the map
+    title.addTo(map);*/
+/*
+    //THE INSTRUCTIONS CONTROL
+    var instructions = L.control({position: 'topleft'});
+    //Fill the title container with text
+    instructions.onAdd = function (map) {
+      var div_title = L.DomUtil.create('div', 'instructions');
+      div_title.innerHTML += '<h4>Click on a canton to see what your councillors have been up to!</h4>';
+      return div_title;
+    }
+    //Add the title control to the map
+    instructions.addTo(map);*/
+
+    /*//THE SELECTBOX CONTROL
+  	var dropdownHaushaltsgroesse = L.control({position: 'topleft'});
+    // Populate the control
+  	dropdownHaushaltsgroesse.onAdd = function (map) {
+  		var dropdowndiv = L.DomUtil.create('div', 'info selectbox');
+  		dropdowndiv.innerHTML = '<select id="dropdownHaushaltsgroesse" onchange="updateStyle()"><option value="0" selected>Household size</option><option value="1">1</option><option value="2">2</option></select>';
+  		return dropdowndiv;
+  	}
+    //Add the control to the map
+  	dropdownHaushaltsgroesse.addTo(map);*/
+/*
+    //THE INFOBOX CONTROL
+    var info = L.control({position: 'topleft'});
+    //Populate the info control with content
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'info');
+        this.update();
+        return this._div;
+    };
+    info.update = function (props) {
+      this._div.innerHTML = '<h4>Heat-map of countrywide and cantonal activity</h4>';
+      this._div.innerHTML += (props ? '<b>' + props.kanton_long + ': </b>' + props.factor + ' questions per councillor'  : '<b>Switzerland: </b>5.1 questions per councillor.');
+
+    }
+    //Add the infobox to the map
+    info.addTo(map);*/
+/*
+    //THE LEGEND CONTROL
+    var legend = L.control({position: 'topleft'});
+    //Populate the control with values
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = [0, 1, 4, 7, 10, 12],
+            labels = [];
+        // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                grades[i] + (grades[i + 1] ? ' &ndash; ' + grades[i + 1] + '<br>' : '+');
+        }
+        return div;
+    };
+    //Add the legend to the map
+    legend.addTo(map);*/
+
+  </script>
+</body>
+</html>
