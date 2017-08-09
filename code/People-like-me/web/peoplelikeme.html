@@ -23,37 +23,39 @@
 
   <!-- Here's our css-definition for the map container-->
   <style>
-    #title { position: absolute; top: 20px; left: 20px; width: 900px; height: 100px; padding: 6px 8px; font: 30px Arial, Helvetica, sans-serif; font-weight: bold; background: white; }
-    #title span { font: 18px Arial, Helvetica, sans-serif; font-weight: normal; }
+    #title { position: absolute; top: 20px; left: 20px; width: 900px; height: 150px; padding: 6px 8px; font: 30px Arial, Helvetica, sans-serif; font-weight: bold; background: white; }
+    #title span { font: 14px Arial, Helvetica, sans-serif; font-weight: normal; }
 
-    #map { position: absolute; top: 100px; left: 20px; width: 900px; height: 600px; }
+    #map { position: absolute; top: 150px; left: 20px; width: 900px; height: 600px; }
     .instructions { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .instructions h4 { margin: 0 0 5px; color: red; }
     .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+    .big {font: 24px Arial, Helvetica, sans-serif; font-weight: bold; text-align: right;}
     .legend { text-align: left; line-height: 20px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }
     .selectbox { text-align: left; line-height: 18px; color: #555; } .selectbox select { font: 14px/16px Arial, Helvetica, sans-serif; background-color: transparent; border-width: 0px; outline: none; padding: 2px; }
 
     #article { position: absolute; top: 100px; left: 940px; width: 400px; height: 600px; font: 14px Arial, Helvetica, sans-serif; font-weight: normal; background: #eeeeee}
     #article .title { font: 20px Arial, Helvetica, sans-serif; font-weight: bold; } #article input { padding: 4px 4px; font: 14px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 5px rgba(0,0,0,0.2); border-radius: 4px; }
     #article .click { color: red; }
+    #below { position: absolute; top: 750px; left: 20px; width: 900px; height: 100px; font: 14px Arial, Helvetica, sans-serif; font-weight: normal; }
   </style>
 </head>
 <body>
   <!-- A div for the title -->
-  <div id="title">Where Are The People Like You?<br>
-    <!-- Selectbox for Household Size -->
-    <select id="dropdownHaushaltsgroesse" onchange="updateStyle()">
-      <option value="null" selected="selected">Household size</option>
-      <script>
-        searchbox = document.getElementById('dropdownHaushaltsgroesse');
-        searchbox.innerHTML += searchOptions['Haushaltsgroesse'];
-      </script>
-    </select>
+  <div id="title">Where Are The People Like You?<br><span>Choose your attributes</span><br>
     <!-- Selectbox for Age -->
     <select id="dropdownAlter" onchange="updateStyle()">
       <option value="null" selected="selected">Age</option>
       <script>
         searchbox = document.getElementById('dropdownAlter');
         searchbox.innerHTML += searchOptions['Alter'];
+      </script>
+    </select>
+    <!-- Selectbox for Household Size -->
+    <select id="dropdownHaushaltsgroesse" onchange="updateStyle()">
+      <option value="null" selected="selected">Household size</option>
+      <script>
+        searchbox = document.getElementById('dropdownHaushaltsgroesse');
+        searchbox.innerHTML += searchOptions['Haushaltsgroesse'];
       </script>
     </select>
     <!-- Selectbox for Marital Status -->
@@ -64,9 +66,36 @@
         searchbox.innerHTML += searchOptions['Zivilstand'];
       </script>
     </select>
+    <!-- Selectbox for Nationality -->
+    <select id="dropdownNationalitaet" onchange="updateStyle()">
+      <option value="null" selected="selected">Nationality</option>
+      <script>
+        searchbox = document.getElementById('dropdownNationalitaet');
+        searchbox.innerHTML += searchOptions['Nationalitaet'];
+      </script>
+    </select>
+    <!-- Selectbox for Income -->
+    <select id="dropdownEinkommen" onchange="updateStyle()">
+      <option value="null" selected="selected">Income</option>
+      <script>
+        searchbox = document.getElementById('dropdownEinkommen');
+        searchbox.innerHTML += searchOptions['Einkommen'];
+      </script>
+    </select>
+    <!-- Selectbox for Party -->
+    <select id="dropdownParteien" onchange="updateStyle()">
+      <option value="null" selected="selected">Political party</option>
+      <script>
+        searchbox = document.getElementById('dropdownParteien');
+        searchbox.innerHTML += searchOptions['Parteien'];
+      </script>
+    </select>
   </div>
   <!-- This is our div which will contain the map -->
   <div id="map"></div>
+  <div id="below">
+  The value corresponds to the over- or underrepresentation of people with a given attribute in a geographic entity, relative to the Swiss average. Expample: The fraction of Swiss people who are married is 40%. If in Zurich, the fraction is 50%, this corresponds to an overrepresentation of 25% relative to the Swiss average. If several attributes are chosen, the displayed value is an average of the values for each attribute.
+</div>
 
   <!-- This is the script which populates the div -->
   <script type="text/javascript">
@@ -102,15 +131,15 @@
     }).addTo(map);*/
 
     colorValues = [
-      {value: -100, color: '#3288bd', label: 'less than -50%'},
-      {value: -50, color: '#66c2a5', label: '-50% to -30%'},
-      {value: -30, color: '#abdda4', label: '-30% to -15%'},
-      {value: -15, color: '#e6f598', label: '-15% to -5%'},
-      {value: -5, color: '#ffffbf', label: '-5% to +5%'},
-      {value: 5, color: '#fee08b', label: '+5% to +15%'},
-      {value: 15, color: '#fdae61', label: '+15% to +30%'},
-      {value: 30, color: '#f46d43', label: '+30% to +50%'},
-      {value: 50, color: '#d53e4f', label: 'more than +50%'}
+      {value: -100, color: '#3288bd', label: 'weak'},
+      {value: -50, color: '#66c2a5', label: ' '},
+      {value: -30, color: '#abdda4', label: ' '},
+      {value: -15, color: '#e6f598', label: ' '},
+      {value: -5, color: '#ffffbf', label: 'average'},
+      {value: 5, color: '#fee08b', label: ' '},
+      {value: 15, color: '#fdae61', label: ' '},
+      {value: 30, color: '#f46d43', label: ' '},
+      {value: 50, color: '#d53e4f', label: 'strong'}
     ];
 
     function getColor(d) {
@@ -134,6 +163,9 @@
       hh = document.getElementById('dropdownHaushaltsgroesse').value;
       age = document.getElementById('dropdownAlter').value;
       ziv = document.getElementById('dropdownZivilstand').value;
+      nat = document.getElementById('dropdownNationalitaet').value;
+      pp = document.getElementById('dropdownParteien').value;
+      ein = document.getElementById('dropdownEinkommen').value;
 
       params = 0;
       sum = 0;
@@ -151,6 +183,21 @@
       if(ziv != "null") {
           d_ziv = data[id]['Zivilstand'][ziv];
           sum += d_ziv;
+          params += 1;
+      }
+      if(nat != "null") {
+          d_nat = data[id]['Nationalitaet'][nat];
+          sum += d_nat;
+          params += 1;
+      }
+      if(pp != "null") {
+          d_pp = data[id]['Parteien'][pp];
+          sum += d_pp;
+          params += 1;
+      }
+      if(ein != "null") {
+          d_ein = data[id]['Einkommen'][ein];
+          sum += d_ein;
           params += 1;
       }
 
@@ -260,19 +307,16 @@
         this.update();
         return this._div;
     };
-    info.update = function (feature) {
 
-      hh = document.getElementById('dropdownHaushaltsgroesse').value;
-      age = document.getElementById('dropdownAlter').value;
-      ziv = document.getElementById('dropdownZivilstand').value;
+    info.update = function (feature) {
 
       if(feature) {
         id = feature.id;
         this._div.innerHTML = '<h4>' + feature.properties.name + '</h4>';
         val = getValue(feature);
         if(val > 0) {abovebelow = "above";} else {abovebelow = "below";}
-        this._div.innerHTML += '<b>Aggregate representation:</b><br> ' + val + '% ' + abovebelow + ' average.<br>'
-        if(hh != "null") {
+        this._div.innerHTML += '<span class="big">' + Math.round(val) + '%</span><br>' + abovebelow + ' average<br>'
+        /*if(hh != "null") {
           val = data[id]['Haushaltsgroesse'][hh];
           if(val > 0) {abovebelow = "above";} else {abovebelow = "below";}
           this._div.innerHTML += '<b>Household size: ' + hh + ' people</b><br>' + val + '% ' + abovebelow + ' average.<br>'
@@ -286,10 +330,10 @@
           val = data[id]['Zivilstand'][ziv];
           if(val > 0) {abovebelow = "above";} else {abovebelow = "below";}
           this._div.innerHTML += '<b>Marital status: ' + ziv + ' </b><br>' + val + '% ' + abovebelow + ' average.<br>'
-        }
+        }*/
       }
       else {
-        this._div.innerHTML = '<h4>Hover over the districts to get details</h4>';
+        this._div.innerHTML = '<h4>Details</h4>';
       }
     }
     //Add the infobox to the map
@@ -300,7 +344,8 @@
     //Populate the control with values
     legend.onAdd = function (map) {
         var div = L.DomUtil.create('div', 'info legend');
-        divtext_start = '<strong>Overrepresentation</strong><br>';
+        divtext_start = '<strong>Representatation</strong><br>';
+        //divtext_start = '';
         divtext_end = '';
         for(i in colorValues) {
           divtext_end = '<i style="background:' + colorValues[i].color + '"></i> ' + colorValues[i].label + '<br>' + divtext_end;

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+
+  <!-- Here we include the css-library for leaflet-->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"  integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+
+  <!-- Here we include the js-script for leaflet -->
+  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"  integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
+
+  <!-- Here we get the some canton shapes to add static background to the map -->
+  <script src="geojson/geodata_kant.js"></script>
+
+  <!-- Here we get the GeoJSON data which will late be placed on the map -->
+  <script src="geojson/geodata_bez.js"></script>
+
+  <!-- Here we get the sociodemographic data that will be used to calculate the entity colors -->
+  <script src="json/data_bez.js"></script>
+
+  <!-- The data to populate the search boxesj -->
+  <script src="json/searchOptions.js"></script>
+
+  <!-- Here's our css-definition for the map container-->
+  <style>
+    #title { position: absolute; top: 20px; left: 20px; width: 900px; height: 100px; padding: 6px 8px; font: 30px Arial, Helvetica, sans-serif; font-weight: bold; background: white; }
+    #title span { font: 18px Arial, Helvetica, sans-serif; font-weight: normal; }
+
+    #map { position: absolute; top: 100px; left: 20px; width: 900px; height: 600px; }
+    .instructions { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .instructions h4 { margin: 0 0 5px; color: red; }
+    .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+    .legend { text-align: left; line-height: 20px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }
+    .selectbox { text-align: left; line-height: 18px; color: #555; } .selectbox select { font: 14px/16px Arial, Helvetica, sans-serif; background-color: transparent; border-width: 0px; outline: none; padding: 2px; }
+
+    #article { position: absolute; top: 100px; left: 940px; width: 400px; height: 600px; font: 14px Arial, Helvetica, sans-serif; font-weight: normal; background: #eeeeee}
+    #article .title { font: 20px Arial, Helvetica, sans-serif; font-weight: bold; } #article input { padding: 4px 4px; font: 14px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 5px rgba(0,0,0,0.2); border-radius: 4px; }
+    #article .click { color: red; }
+  </style>
+</head>
+<body>
+  <!-- A div for the title -->
+  <div id="title">Where Are The People Like You?<br>
+    <!-- Selectbox for Household Size -->
+    <select id="dropdownHaushaltsgroesse" onchange="updateStyle()">
+      <option value="null" selected="selected">Household size</option>
+      <script>
+        searchbox = document.getElementById('dropdownHaushaltsgroesse');
+        searchbox.innerHTML += searchOptions['Haushaltsgroesse'];
+      </script>
+    </select>
+    <!-- Selectbox for Age -->
+    <select id="dropdownAlter" onchange="updateStyle()">
+      <option value="null" selected="selected">Age</option>
+      <script>
+        searchbox = document.getElementById('dropdownAlter');
+        searchbox.innerHTML += searchOptions['Alter'];
+      </script>
+    </select>
+    <!-- Selectbox for Marital Status -->
+    <select id="dropdownZivilstand" onchange="updateStyle()">
+      <option value="null" selected="selected">Marital Status</option>
+      <script>
+        searchbox = document.getElementById('dropdownZivilstand');
+        searchbox.innerHTML += searchOptions['Zivilstand'];
+      </script>
+    </select>
+  </div>
+  <!-- This is our div which will contain the map -->
+  <div id="map"></div>
+
+  <!-- This is the script which populates the div -->
+  <script type="text/javascript">
+
+    //MAIN MAP
+    //--------
+
+    //Create a grey, empty space for the map
+    var map = L.map('map', {zoomControl:false}).setView([46.88, 8.2], 8);
+    map.dragging.disable();
+    map.doubleClickZoom.disable();
+
+    /*
+    //Add some static structure to the map
+    L.geoJSON(geodata_kant, {
+            style: {
+              fillColor: 'none',
+              weight: 3,
+              opacity: 1,
+              color: '#202020',
+              fillOpacity: 0
+            }
+    }).addTo(map);*/
+
+    /*
+    //Add layers to the map --> make sure we have a good token!
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=sk.eyJ1Ijoic2ltb24tcGlua21hcnRpbmkiLCJhIjoiY2o0OHRteHd5MGdqNTJxbnd5a2FycnFjMCJ9.D-OViIkNdbrEyL5O1_9Mgg',
+    {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 8,
+        minZoom: 8,
+        id: 'mapbox.light',
+    }).addTo(map);*/
+
+    colorValues = [
+      {value: -100, color: '#3288bd', label: 'less than -50%'},
+      {value: -50, color: '#66c2a5', label: '-50% to -30%'},
+      {value: -30, color: '#abdda4', label: '-30% to -15%'},
+      {value: -15, color: '#e6f598', label: '-15% to -5%'},
+      {value: -5, color: '#ffffbf', label: '-5% to +5%'},
+      {value: 5, color: '#fee08b', label: '+5% to +15%'},
+      {value: 15, color: '#fdae61', label: '+15% to +30%'},
+      {value: 30, color: '#f46d43', label: '+30% to +50%'},
+      {value: 50, color: '#d53e4f', label: 'more than +50%'}
+    ];
+
+    function getColor(d) {
+      for(i in colorValues) {
+        if(d >= colorValues[i].value) {
+          color = colorValues[i].color;
+        }
+        else {
+          break;
+        }
+      }
+      return color;
+    };
+
+
+    //this function defines the color for different number of questions
+    function getValue(feature) {
+
+      id = feature.id;
+
+      hh = document.getElementById('dropdownHaushaltsgroesse').value;
+      age = document.getElementById('dropdownAlter').value;
+      ziv = document.getElementById('dropdownZivilstand').value;
+
+      params = 0;
+      sum = 0;
+
+      if(hh != "null") {
+          d_hh = data[id]['Haushaltsgroesse'][hh];
+          sum += d_hh;
+          params += 1;
+      }
+      if(age != "null") {
+          d_age = data[id]['Alter'][age];
+          sum += d_age;
+          params += 1;
+      }
+      if(ziv != "null") {
+          d_ziv = data[id]['Zivilstand'][ziv];
+          sum += d_ziv;
+          params += 1;
+      }
+
+      if(params == 0) {
+        d = 0;
+      }
+      else {
+        d = sum / params;
+      }
+      return d;
+    }
+
+
+    function style(feature) {
+      return {
+          fillColor: getColor(getValue(feature)),
+          weight: 1,
+          opacity: 0.6,
+          color: 'black',
+          //dashArray: '3',
+          fillOpacity: 0.8
+      };
+    }
+
+    function updateStyle() {
+      geojson.setStyle(style);
+    }
+
+    //The highlight function, an eventhandler
+    function highlightFeature(e) {
+        var layer = e.target;
+        layer.setStyle({
+            weight: 2,
+            color: 'black',
+            //dashArray: '',
+            fillOpacity: 1
+        });
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+        info.update(layer.feature);
+    }
+    //The un-highlight function, another eventhandler
+    function resetHighlight(e) {
+      geojson.resetStyle(e.target);
+      info.update();
+    }
+
+    //The listener function for the layers on the map
+    function onEachFeature(feature, layer) {
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight
+            //click: updateArticle
+        });
+    }
+
+    //Add the structure to the map
+    var geojson = L.geoJSON(geodata_bez, {
+            style: style,                       //the style-setting function
+            onEachFeature: onEachFeature       //the eventhandler function
+    }).addTo(map);
+
+
+
+    //ADDITIONAL CONTROLS
+    //-------------------
+
+    /*//THE TITLE CONTROL
+    var title = L.control({position: 'topleft'});
+    //Fill the title container with text
+    title.onAdd = function (map) {
+      var div_title = L.DomUtil.create('div', 'title');
+      div_title.innerHTML += '«There are no Stupid Questions»<br><span>An Inquiry into the Mystery of Swiss Parliamentary Question Hours</span>';
+      return div_title;
+    }
+    //Add the title control to the map
+    title.addTo(map);*/
+/*
+    //THE INSTRUCTIONS CONTROL
+    var instructions = L.control({position: 'topleft'});
+    //Fill the title container with text
+    instructions.onAdd = function (map) {
+      var div_title = L.DomUtil.create('div', 'instructions');
+      div_title.innerHTML += '<h4>Click on a canton to see what your councillors have been up to!</h4>';
+      return div_title;
+    }
+    //Add the title control to the map
+    instructions.addTo(map);*/
+
+    /*//THE SELECTBOX CONTROL
+  	var dropdownHaushaltsgroesse = L.control({position: 'topleft'});
+    // Populate the control
+  	dropdownHaushaltsgroesse.onAdd = function (map) {
+  		var dropdowndiv = L.DomUtil.create('div', 'info selectbox');
+  		dropdowndiv.innerHTML = '<select id="dropdownHaushaltsgroesse" onchange="updateStyle()"><option value="0" selected>Household size</option><option value="1">1</option><option value="2">2</option></select>';
+  		return dropdowndiv;
+  	}
+    //Add the control to the map
+  	dropdownHaushaltsgroesse.addTo(map);*/
+
+    //THE INFOBOX CONTROL
+    var info = L.control({position: 'topright'});
+    //Populate the info control with content
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'info');
+        this.update();
+        return this._div;
+    };
+    info.update = function (feature) {
+
+      hh = document.getElementById('dropdownHaushaltsgroesse').value;
+      age = document.getElementById('dropdownAlter').value;
+      ziv = document.getElementById('dropdownZivilstand').value;
+
+      if(feature) {
+        id = feature.id;
+        this._div.innerHTML = '<h4>' + feature.properties.name + '</h4>';
+        val = getValue(feature);
+        if(val > 0) {abovebelow = "above";} else {abovebelow = "below";}
+        this._div.innerHTML += '<b>Aggregate representation:</b><br> ' + val + '% ' + abovebelow + ' average.<br>'
+        if(hh != "null") {
+          val = data[id]['Haushaltsgroesse'][hh];
+          if(val > 0) {abovebelow = "above";} else {abovebelow = "below";}
+          this._div.innerHTML += '<b>Household size: ' + hh + ' people</b><br>' + val + '% ' + abovebelow + ' average.<br>'
+        }
+        if(age != "null") {
+          val = data[id]['Alter'][age];
+          if(val > 0) {abovebelow = "above";} else {abovebelow = "below";}
+          this._div.innerHTML += '<b>Age: ' + age + ' years</b><br>' + val + '% ' + abovebelow + ' average.<br>'
+        }
+        if(ziv != "null") {
+          val = data[id]['Zivilstand'][ziv];
+          if(val > 0) {abovebelow = "above";} else {abovebelow = "below";}
+          this._div.innerHTML += '<b>Marital status: ' + ziv + ' </b><br>' + val + '% ' + abovebelow + ' average.<br>'
+        }
+      }
+      else {
+        this._div.innerHTML = '<h4>Hover over the districts to get details</h4>';
+      }
+    }
+    //Add the infobox to the map
+    info.addTo(map);
+
+    //THE LEGEND CONTROL
+    var legend = L.control({position: 'topleft'});
+    //Populate the control with values
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend');
+        divtext_start = '<strong>Overrepresentation</strong><br>';
+        divtext_end = '';
+        for(i in colorValues) {
+          divtext_end = '<i style="background:' + colorValues[i].color + '"></i> ' + colorValues[i].label + '<br>' + divtext_end;
+        }
+        div.innerHTML = divtext_start + divtext_end;
+        return div;
+    };
+    //Add the legend to the map
+    legend.addTo(map);
+
+  </script>
+</body>
+</html>

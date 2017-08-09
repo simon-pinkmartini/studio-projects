@@ -44,3 +44,6 @@ https://www.pxweb.bfs.admin.ch/Selection.aspx?px_language=de&px_db=px-x-17020200
 
 Einkommen:
 https://www.estv.admin.ch/estv/de/home/allgemein/steuerstatistiken/fachinformationen/steuerstatistiken/direkte-bundessteuer/dbst-np-gemeinden-2013.html
+
+Gemeinde-Updates:
+https://www.bfs.admin.ch/bfs/de/home/grundlagen/agvch.html
