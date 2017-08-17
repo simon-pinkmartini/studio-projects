@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+
+body {
+  font: bold 26px monospace;
+  mix-blend-mode: multiply;
+}
+
+.title {
+  font-size: 150%;
+}
+
+.enter {
+  /*fill: brown;*/
+}
+
+</style>
+
+
+<svg width="900" height="600"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="wordData5.js"></script>
+<script>
+
+var interval = 300,
+    d_in = 2000,
+    d_out = 8000,
+    d_up = 2000;
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height")
+    padding_left = 32,
+    padding_top = 32;
+
+var gWords = svg.append("g").attr("transform", "translate(" + (100 + padding_left) + "," + padding_top + ")"),
+    gYears = svg.append("g").attr("transform", "translate(" + padding_left + "," + padding_top + ")");
+
+var partyColors = {
+  'SVP': 'green',
+  'SP': 'red',
+  'FDP': 'blue',
+  'CVP': 'orange',
+  'BDP': 'yellow'
+};
+
+/*var freqFontsizes = {
+  1: '100%',
+  2: '120%',
+  3: '140%',
+  4: '160%',
+  5: '180%',
+  6: '200%',
+  7: '220%',
+  8: '240%',
+  9: '260%',
+  10: '280%'
+};*/
+
+var freqFontsizes = {
+  1: '100%',
+  2: '120%',
+  3: '140%',
+  4: '160%',
+  5: '280%',
+  6: '300%',
+  7: '330%',
+  8: '360%'
+};
+
+function getFreqFontsize(myFreq) {
+  for(freq in freqFontsizes) {
+    if(myFreq >= freq) { var fontsize = freqFontsizes[freq]; }
+  }
+  return fontsize;
+}
+
+function updateword(data) {
+
+  // JOIN new data with old elements.
+  var text = gWords.selectAll("text").data(data, function(d) { return d.word; });
+
+  // ENTER new elements present in new data.
+  text.enter().append("text")
+      .attr("class", "enter")
+      //.attr("dy", ".35em")
+      .attr("y", 0)
+      .style("font-size", function(d) { return getFreqFontsize(d.freq); })
+      .style("fill-opacity", 1e-6)
+      .style("fill", function(d) { return partyColors[d.party]; })
+      .text(function(d) { return d.word; })
+      .attr("x", function(d, i) { return Math.random() * (width - padding_left - 100 - this.getComputedTextLength()); })
+    .transition()
+      .attr("y", (height - padding_top) / 3)
+      .style("fill-opacity", 1)
+      .duration(d_in)
+      .ease(d3.easeLinear)
+    .transition()
+      .attr("y", height)
+      .style("fill-opacity", 0)
+    .duration(d_out)
+    .remove();
+
+    // UPDATE old elements present in new data.
+    text.interrupt()
+      .transition()
+        .attr("y", height * 1 / 12 + Math.random() * height  * 1 / 2)
+        .style("fill-opacity", .6)
+        .style("fill", function(d) { return partyColors[d.party]; })
+        .style("font-size", function(d) { return getFreqFontsize(d.freq); })
+        .style("font-size", function(d) { return getFreqFontsize(d.freq); })
+        .duration(d_up)
+        //.attr("x", function(d) {return Math.random() * (width - padding_left - 100 - this.getComputedTextLength()); })
+      .transition()
+        .attr("y", height * 5 / 6)
+        .style("fill-opacity", 0)
+      .duration(d_out)
+        .ease(d3.easeLinear)
+      .remove();
+
+}
+
+function updateyear(data) {
+  var text = gYears.selectAll("text").data(data, function(d) { return d.year; });
+
+  var bla = text.enter().append("text")
+      .attr("class", "enter")
+      .attr("y", 0)
+      .attr("x", 0)
+      .style("fill-opacity", 0)
+      .style("fill", function(d) { return partyColors[d.party]; });
+
+  bla.append("tspan")
+      .attr("x", 0)
+      .attr("dy", "1.2em")
+      .text(function (d) {return d.year;});
+
+  bla.append("tspan")
+      .attr("x", 0)
+      .attr("dy", "1.2em")
+      .style("font-size", "85%")
+      .text(function (d) {return d.party});
+
+  bla.append("tspan")
+      .attr("x", 0)
+      .attr("dy", "1.2em")
+      .style("font-size", "70%")
+      .text(function (d) {return d.name});
+
+  bla.transition()
+      .style("fill-opacity", 1)
+      .duration(d_in * 2)
+    .transition()
+      .attr("y", height - 120)
+      .ease(d3.easeLinear)
+      .duration(interval * wordData[i_years].words.length)
+    .transition()
+      .style("fill-opacity", 0)
+      .duration(d_in)
+      .remove();
+
+}
+
+// first, shuffle all the words in a particular year
+for(i_years = 0; i_years < wordData.length; i_years++) {
+  d3.shuffle(wordData[i_years].words);
+}
+
+//these will keep track of the current positiion
+i_years = 0;
+i_words = 0;
+
+// Grab a random sample of letters from the alphabet, in alphabetical order.
+d3.interval(function() {
+
+  // display the next word in the list
+  data = [];
+  currentData = {};
+  currentData['word'] = wordData[i_years].words[i_words].word;
+  currentData['freq'] = wordData[i_years].words[i_words].freq;
+  currentData['party'] = wordData[i_years].party;
+  data.push(currentData);
+  updateword(data);
+
+  yearData = [];
+  currentyear = {};
+  currentyear['year'] = wordData[i_years].year;
+  currentyear['party'] = wordData[i_years].party;
+  currentyear['name'] = wordData[i_years].name;
+  yearData.push(currentyear);
+  updateyear(yearData);
+
+  // move forward in the wordlist, from year to year
+  if(i_words + 1 != wordData[i_years].words.length) {
+    i_words = i_words + 1;
+  }
+  else {
+    i_words = 0;
+    if(i_years + 1 != wordData.length) {
+      i_years = i_years + 1;
+    }
+    else {
+      i_years = 0;
+    }
+  }
+
+}, interval);
+
+</script>

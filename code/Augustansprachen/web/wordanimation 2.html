@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+
+text {
+  font: bold 32px monospace;
+}
+
+.enter {
+  fill: green;
+}
+
+.update {
+  fill: #333;
+}
+
+.exit {
+  fill: brown;
+}
+
+</style>
+<svg width="1000" height="500"></svg>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="speech.js"></script>
+<script>
+
+//var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+//var alphabet = speech.split(" ");
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height"),
+    g = svg.append("g").attr("transform", "translate(32," + (height / 2) + ")");
+
+function update(data) {
+  /*var t = d3.transition()
+      .duration(4500);*/
+
+  // JOIN new data with old elements.
+  var text = g.selectAll("text")
+    .data(data, function(d) { return d; });
+
+  // EXIT old elements not present in new data.
+  text.exit()
+      .attr("class", "exit")
+    .transition()
+      .attr("y", 180)
+      .style("fill-opacity", 1e-6)
+      .duration(3000)
+      .ease(d3.easeLinear)
+      .remove();
+
+  // UPDATE old elements present in new data.
+  text.interrupt()
+    .transition()
+      .attr("class", "update")
+      .attr("y", function (d, i) { return Math.random() * -120;} )
+      .style("fill-opacity", 1)
+    .duration(1500)
+    .transition()
+      .attr("y", 0)
+      .duration(1500)
+      .ease(d3.easeLinear);
+
+  // ENTER new elements present in new data.
+  text.enter().append("text")
+      .attr("class", "enter")
+      .attr("dy", ".35em")
+      .attr("y", -60)
+      .attr("x", function(d, i) { return Math.random() * 700; })
+      .style("fill-opacity", 1e-6)
+      .text(function(d) { return d; })
+    .transition()
+      .attr("y", 0)
+      .style("fill-opacity", 1)
+      .duration(1500)
+      .ease(d3.easeLinear);
+}
+
+// The initial display.
+//update(alphabet);
+var arr = [];
+
+// Grab a random sample of letters from the alphabet, in alphabetical order.
+d3.interval(function() {
+
+  current = d3.shuffle(speech).slice(0, 1);
+  arr.push(current);
+
+  update(arr);
+  //counter = (counter + 1) % 5;
+
+  if(arr.length > 4) {
+    arr.shift();
+  }
+
+}, 1000);
+
+</script>
