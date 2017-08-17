@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css?family=Droid+Serif" rel="stylesheet">
+
+  <style>
+    svg {
+      /*background-color: grey;*/
+      font-family: 'Droid Serif', serif;
+    }
+    .title {
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .subtitle {
+      font-size: 20px;
+    }
+    .axis--y {
+      font-family: 'Droid Serif', serif;
+      font-size: 16px;
+    }
+    .axis--y .domain {
+      display: none;
+    }
+    .axis--x {
+      font-family: 'Droid Serif', serif;
+      font-size: 16px;
+    }
+    .axis--x .domain {
+      display: none;
+    }
+    .border {
+      stroke: black;
+      stroke-width: 2px;
+      fill-opacity: 0;
+    }
+    .tick line {
+      stroke: black;
+      stroke-dasharray: 4,4;
+    }
+    .line {
+      fill: none;
+      stroke: steelblue;
+      stroke-width: 6px;
+    }
+    .your-line {
+      fill: none;
+      stroke: brown;
+      stroke-width: 6px;
+    }
+    .circle {
+      fill: steelblue;
+    }
+    .button {
+      fill: grey;
+    }
+    .button-active {
+      fill: steelblue;
+      cursor: pointer;
+    }
+    .button-text {
+      font-family: 'Droid Serif', serif;
+      font-weight: bold;
+      font-size: 16px;
+      fill: white;
+    }
+    .active {
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+<svg width="800" height="500">
+  <text x="0" y="20" class="title">Was geschah auf dem Devisenmarkt?</text>
+  <text x="0" y="50" class="subtitle">Eurokurs, in Franken: Zeichnen Sie die Entwicklung ein</text>
+</svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+var cutoffMoment = '2014-12';
+
+var yourData = [];
+
+var svg = d3.select("svg"),
+    margin = {top: 80, right: 40, bottom: 80, left: 40},
+    width = svg.attr("width") - margin.left - margin.right,
+    height = svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var border = g.append("rect").attr("x", 0).attr("y", 0).attr("width", width).attr("height", height).attr("class", "border");
+
+var clipRect = g.append('clipPath').attr('id', 'clip'),
+    clipRectRect = clipRect.append('rect')
+                            .attr('width', 1)
+                            .attr('height', height);
+
+var correctSel = g.append('g').attr('clip-path', 'url(#clip)');
+var yourDataSel = g.append('path')
+                   .attr('class', 'your-line');
+
+var gButton = svg.append("g")
+                  .attr("transform", "translate(" + (margin.left + width / 2 - 100) + "," + (margin.top + height + 40) + ")");
+
+var showButton = gButton.append('rect')
+                        .attr('width', 200)
+                        .attr('height', 40)
+                        .attr('rx', 10)
+                        .attr('ry', 10)
+                        .attr('class', 'button');
+
+var showButtonText = gButton.append('text')
+                            .attr('x', 45)
+                            .attr('y', "1.5em")
+                            .attr('class', 'button-text')
+                            .text('Kurs anzeigen');
+
+var x = d3.scaleTime().range([0, width]),
+    y = d3.scaleLinear().range([height, 0]),
+    z = d3.scaleOrdinal(d3.schemeCategory10);
+
+var parseTime = d3.timeParse("%Y-%m");
+var formatTime = d3.timeFormat("%Y-%m-%d");
+
+var line = d3.line()
+    .curve(d3.curveMonotoneX)
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.value); });
+
+function clamp(a, b, c) {
+  return Math.max(a, Math.min(b, c));
+}
+
+d3.csv("data.csv", type, function(error, data) {
+  if (error) throw error;
+
+  var curves = data.columns.slice(1).map(function(id) {
+    return {
+      id: id,
+      values: data.map(function(d) {
+        return {date: d.date, value: d[id]};
+      })
+    };
+  });
+
+  yourData = {
+    id: 'yourdata',
+    values: data.map(function(d) { return {date: d.date, value: d.EURCHF, defined: 0} })
+                .filter(function(d) {
+                  if (d.date == parseTime(cutoffMoment)) {d.defined = true };
+                  return d.date >= parseTime(cutoffMoment);
+                  })
+  };
+
+  x.domain(d3.extent(data, function(d) { return d.date; }));
+
+  clipRectRect.attr('width', x(parseTime(cutoffMoment)));
+
+  y.domain([
+    1, 1.3
+    //d3.min(curves, function(c) { return d3.min(c.values, function(d) { return d.value; }); }),
+    //d3.max(curves, function(c) { return d3.max(c.values, function(d) { return d.value; }); })
+  ]);
+
+  z.domain(curves.map(function(c) { return c.id; }));
+
+  gXaxis = g.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x).ticks(d3.timeYear).tickSize(height * (-1)));
+  gXaxis.selectAll(".tick text").attr("dy", 16).attr("dx", 16);
+
+  gYaxis = g.append("g")
+            .attr("class", "axis axis--y")
+            .call(d3.axisLeft(y).ticks(6).tickSize(width * (-1)));
+  gYaxis.selectAll(".tick text").attr("dx", -5);
+
+
+  //  g.selectAll(".tick line").attr("stroke", "red");
+
+  var curve = correctSel.selectAll(".curve")
+    .data(curves)
+    .enter().append("g")
+      .attr("class", "curve");
+
+  curve.append("path")
+      .attr("class", "line")
+      .attr("d", function(d) { return line(d.values); })
+      .style("stroke", function(d) { return z(d.id); });
+
+  g.append("circle")
+   .attr("cx", x(yourData.values[0].date))
+   .attr("cy", y(yourData.values[0].value))
+   .attr("r", 8)
+   .attr("class", "circle");
+
+});
+
+var completed = false;
+
+svg.call(d3.drag().on('drag', function() {
+
+  var cutoffDate = yourData.values[0].date;
+  var cutoffValue = yourData.values[0].value;
+
+  var pos = d3.mouse(this);
+
+  //var date = x.invert(pos[0]);
+
+  var date = clamp(parseTime(cutoffMoment), x.domain()[1], x.invert(pos[0] - margin.left));
+  var value = clamp(y.domain()[0], y.domain()[1], y.invert(pos[1] - margin.top));
+
+  yourData.values.forEach(function(d) {
+    //alert(d3.timeDay.count(d.date, date));
+    if (Math.abs(d3.timeDay.count(d.date, date)) < 15){
+
+      //alert("clicked date: " + date + ", treated date: " + d.date  + "\nold value: " + d.value + ", new value: " + value);
+      d.value = value;
+      d.defined = true;
+    }
+  });
+
+  yourData.values[0].date = cutoffDate;
+  yourData.values[0].value = cutoffValue;
+
+  yourDataSel.attr('d', line.defined( function(d) { return d.defined; } )(yourData.values));
+
+  if (!completed && d3.mean(yourData.values, function(d) { return d.defined; }) == 1){
+    completed = true;
+    //clipRectRect.transition().duration(1000).attr('width', width);
+    showButton.classed("button-active", true).on("click", showCorrectSel);
+    showButtonText.classed("active", true).on("click", showCorrectSel);
+  }
+
+}));
+
+function showCorrectSel() {
+  clipRectRect.transition().duration(1000).attr('width', width);
+  svg.call(d3.drag().on('drag', null));
+}
+
+function type(d, _, columns) {
+  d.date = parseTime(d.date);
+  for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
+  return d;
+}
+
+</script>
+</body>
+</html>
