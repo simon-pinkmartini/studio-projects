@@ -1,0 +1,113 @@
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+    background-color: grey;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: lightgrey;
+}
+
+svg {
+  font-family: 'Droid Serif', serif;
+}
+.title {
+  font-size: 18px;
+  font-weight: bold;
+}
+.subtitle {
+  font-size: 16px;
+}
+.axis--y {
+  font-family: 'Droid Serif', serif;
+  font-size: 14px;
+}
+.axis--y .domain {
+  display: none;
+}
+.axis--x {
+  font-family: 'Droid Serif', serif;
+  font-size: 14px;
+}
+.axis--x .domain {
+  display: none;
+}
+.border {
+  stroke: black;
+  stroke-width: 2px;
+  fill-opacity: 0;
+}
+.tick line {
+  stroke: black;
+  stroke-dasharray: 4,4;
+}
+.zero-tick {
+  stroke: black;
+  stroke-width: 1.5px;
+}
+.correct-line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 8px;
+  stroke-opacity: 0.8;
+}
+.your-line {
+  fill: none;
+  stroke: brown;
+  stroke-width: 8px;
+  stroke-opacity: 0.8;
+}
+.bar {
+  stroke: black;
+  fill: steelblue;
+  fill-opacity: 0.8;
+}
+.your-bar {
+  stroke: black;
+  fill: brown;
+  fill-opacity: 0.5;
+}
+.circle {
+  stroke: black;
+  fill: steelblue;
+  fill-opacity: 0.8;
+}
+.button {
+  fill: grey;
+}
+.button-active {
+  fill: steelblue;
+  cursor: pointer;
+}
+.button-text {
+  font-family: 'Droid Serif', serif;
+  font-weight: bold;
+  font-size: 16px;
+  fill: white;
+}
+.active {
+  cursor: pointer;
+}
+.debriefing {
+  font-family: 'Droid Serif', serif;
+  padding-top: 20px;
+  /*padding-left: 40px;
+  width: 740px;*/
+  font-size: 16px;
+  visibility: hidden;
+  /*color: lightgrey;
+  filter: blur(4px);*/
+  line-height: 150%;
+}
+.unblur {
+  /*filter: none;
+  color: black;*/
+  visibility: visible;
+}
